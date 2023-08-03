@@ -77,8 +77,8 @@ run_addons () {
 parch=""
 touch $WORKSPACE/res.txt
 for arch in ${ARCHS} ; do
+  export SCRAM_ARCH=$arch
   if $BUILDTIME ; then
-    export SCRAM_ARCH=$arch
     cd $WORKSPACE/inst
     echo ${SCRAM_ARCH} >> $WORKSPACE/res.txt
     if [ $(echo ${INVALID_ARCHS} | tr ' ' '\n' | grep "^${arch}$" | wc -l) -gt 0 ] ; then
