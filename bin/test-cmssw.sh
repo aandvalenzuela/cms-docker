@@ -14,8 +14,6 @@ INVALID_ARCHS='slc6_amd64_gcc461 slc6_amd64_gcc810 slc7_aarch64_gcc493 slc7_aarc
 export CMSSW_GIT_REFERENCE=/cvmfs/cms.cern.ch/cmssw.git.daily
 ARCHS="$1"
 
-echo "Buildtime? $BUILDTIME"
-
 if [ "$WORKSPACE" = "" ] ; then export WORKSPACE=$(/bin/pwd) ; fi
 cd $WORKSPACE
 rm -rf inst; mkdir inst; cd inst
@@ -37,8 +35,7 @@ if [ "${ARCHS}" = "" ] ; then
 fi
 
 run_the_matrix () {
-  echo "Workspace: $WORKSPACE"
-  echo "SCRAM ARCH: $SCRAM_ARCH"
+  echo "Architecture: $SCRAM_ARCH"
   echo "CMSSW Version: $cmssw_ver"
 
   RES="ERR"
@@ -50,7 +47,7 @@ run_the_matrix () {
     ((timeout 14400 runTheMatrix.py -j $(nproc) -s --command ' -n 5') 2>&1 | tee -a matrix.log) || true
     find . -name '*' -type f | grep -v '\.log$' | grep -v '\.py$' | xargs --no-run-if-empty rm -rf
     if grep ' tests passed' matrix.log ; then
-      if [ $(grep ' tests passed' matrix.log | sed 's|.*tests passed||' | tr ' ' '\n' | grep '^[1-9]' |wc -l) -eq 0 ] ; then
+      if [ $(grep ' tests passed' matrix.log | sed 's|.*tests passed||' | tr ' ' '\n' | grep '^[1-9]' | wc -l) -eq 0 ] ; then
         RES="OK"
       elif [ $(echo ${SCRAM_ARCH} | grep '_aarch64_' | wc -l) -eq 1 ] ; then
         if [ $(grep "${TEST_OK_MATCH}" matrix.log | wc -l) -eq 1 ] ; then
@@ -62,15 +59,18 @@ run_the_matrix () {
 }
 
 run_addons () {
-  echo "Workspace: $WORKSPACE"
-  echo "SCRAM ARCH: $SCRAM_ARCH"
+  echo "Architecture: $SCRAM_ARCH"
   echo "CMSSW Version: $cmssw_ver"
 
-  #RES="ERR"
+  RES_ADDONS="ERR"
   mkdir -p $WORKSPACE/upload/${SCRAM_ARCH}/${cmssw_ver}
   pushd $WORKSPACE/upload/${SCRAM_ARCH}/${cmssw_ver}
     ((timeout 14400 addOnTests.py -j $(nproc)) 2>&1 | tee -a addons.log) || true
-    cat addons.log
+    if grep ' tests passed' addons.log ; then
+      if [ $(grep ' tests passed' addons.log | sed 's|.*tests passed||' | tr ' ' '\n' | grep '^[1-9]' | wc -l) -eq 0 ] ; then
+        RES_ADDONS="OK"
+      fi
+    fi
   popd
 }
 
@@ -165,7 +165,7 @@ for arch in ${ARCHS} ; do
     touch cmssw.rel
     $(source /cvmfs/cms.cern.ch/cmsset_default.sh >/dev/null 2>&1; scram -a $SCRAM_ARCH list -c CMSSW | grep -v '/cmssw-patch/' | grep ' CMSSW_' >cmssw.rel) || true
     cmssw_ver=$(grep /cvmfs/cms.cern.ch/ cmssw.rel | tail -1 | awk '{print $2}' || true)
-    echo "Getting CMSSW area from cvmfs: $cmssw_ver"
+    echo "Getting CMSSW area from /cvmfs: $cmssw_ver"
     export CMS_PATH=/cvmfs/cms-ib.cern.ch
     export SITECONFIG_PATH=/cvmfs/cms-ib.cern.ch/SITECONF/local
     export BUILD_ARCH=$(echo ${SCRAM_ARCH} | cut -d_ -f1,2)
@@ -174,12 +174,13 @@ for arch in ${ARCHS} ; do
     cd ${cmssw_ver}
     eval `scram run -sh` >/dev/null 2>&1
     RES="SKIP"
+    RES_ADDONS="SKIP"
     if $RUN_TESTS ; then
       run_the_matrix
       run_addons
-      echo "RESULT: $RES"
     fi
     echo "${SCRAM_ARCH}.${cmssw_ver}.TEST.${RES}" >> $WORKSPACE/res.txt
+    echo "${SCRAM_ARCH}.${cmssw_ver}.TEST_ADDONS.${RES_ADDONS}" >> $WORKSPACE/res.txt
   fi
 done
 [ "${parch}" != "" ] && rm -rf ${parch}
