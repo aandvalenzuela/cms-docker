@@ -127,6 +127,7 @@ def process_tags(setup, data, images):
         if (not v in ['SKIP_TESTS', 'CVMFS_UNPACKED', 'BUILD_DATE', 'MAIL_TO', 'CMS_COMPATIBLE_OS', 'CI_TESTS']) and images[-1][v]:
           chkdata.append("%s=%s" % (v, images[-1][v]))
     config_dir = get_key('config_dir', img_data)
+    print("Config dir: ", config_dir)
     docFile = join(config_dir, images[-1]['DOCKER_FILE'])
     print("base man:",from_manifest)
     if watch_manifest: print("watch man:",watch_manifest)
