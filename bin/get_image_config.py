@@ -136,14 +136,17 @@ def process_tags(setup, data, images):
     print("chksum:", docFile, chkdata[-1])
     with open(docFile, encoding="utf-8") as ref:
       for line in ref.readlines():
+          print("Line: ", line)
           items = [i for i in line.split(" ") if i]
           if (items[0] not in ["ADD", "COPY"]) or (":" in items[1]):
             continue
+          print("Items: ", items)
           xfile = join(config_dir, items[1])
+          print("File: ", xfile)
           with open(xfile, encoding="utf-8") as xref:
             chkdata.append(hashlib.md5(xref.read().encode()).hexdigest())
-          print("chksum:", xfile, chkdata[-1])
-    print("Full checksum",chkdata)
+          print("-> chksum:", xfile, chkdata[-1])
+    print("--> Full checksum",chkdata)
     images[-1]['BUILD_CHECKSUM'] = hashlib.md5(("\n".join(chkdata)).encode()).hexdigest()
   return
 
