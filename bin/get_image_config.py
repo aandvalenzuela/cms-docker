@@ -62,6 +62,7 @@ def process_tags(setup, data, images):
       push_info(setup['tags'][tag], data)
     data[-1]['tag']=tag
     img_data = expand(data)
+    print("** ", img_data)
     pop_info(data, cnt)
     image_name = get_key('container', img_data) + ":"+get_key('tag', img_data)
     if get_key('disabled', img_data)=="True":
