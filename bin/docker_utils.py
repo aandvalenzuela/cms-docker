@@ -19,6 +19,7 @@ def hub_request(uri, data=None, params=None, headers=None, method='GET', json=Fa
     DOCKER_HUB_TOKEN = get_token()
   if not headers: headers = {}
   headers['Authorization'] = 'JWT %s' % DOCKER_HUB_TOKEN
+  print("=> JSON INFO: ", json)
   return http_request('%s%s' %(DOCKER_HUB_API, uri), data, params, headers, method, json)
 
 def http_request(url, data=None, params=None, headers=None, method = 'GET', json=False):
