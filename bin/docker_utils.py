@@ -256,7 +256,7 @@ def generate_yaml(username):
   docker_config = dict.fromkeys(['repositories', 'teams'])
   docker_config['teams'] = teams_dict
   docker_config['repositories'] = repositories_dict
-  #logout()
+  logout()
   yaml_location = join(dirname(dirname(abspath(__file__))), 'generated-docker-config.yaml')
   with open(yaml_location, 'w') as file:
     yaml.safe_dump(docker_config, file, encoding='utf-8', allow_unicode=True, default_flow_style=False)
