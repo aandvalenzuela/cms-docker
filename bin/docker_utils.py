@@ -23,6 +23,7 @@ def hub_request(uri, data=None, params=None, headers=None, method='GET', json=Fa
   return http_request('%s%s' %(DOCKER_HUB_API, uri), data, params, headers, method, json)
 
 def http_request(url, data=None, params=None, headers=None, method = 'GET', json=False):
+  print("=> URL: ", url)
   response = request(method=method, url=url, data=data,  params=params, headers=headers)
   print("=> HTTP RESPONSE: ", response.text)
   return response.json() if json else response
