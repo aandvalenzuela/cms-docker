@@ -24,6 +24,7 @@ def hub_request(uri, data=None, params=None, headers=None, method='GET', json=Fa
 
 def http_request(url, data=None, params=None, headers=None, method = 'GET', json=False):
   response = request(method=method, url=url, data=data,  params=params, headers=headers)
+  print("=> HTTP RESPONSE: ", response)
   return response.json() if json else response
 
 # get token for docker Registry API
