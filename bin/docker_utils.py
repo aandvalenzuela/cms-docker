@@ -71,7 +71,9 @@ def delete_repo(username, repo, force=False):
 
 def get_members(username, teamname):
   uri = '/orgs/%s/groups/%s/members/' % (username, teamname)
+  print("=> URI: ", uri)
   response = hub_request(uri, json=True)
+  print("=> Response: ", response)
   members = []
   try:
     for member in response['results']:
