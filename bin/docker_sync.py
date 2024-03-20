@@ -129,6 +129,7 @@ for team_name in hub_teams:
     # UPDATE MEMBERS:
     print('\nSynchronizing members for "%s" team:' % team_name)
     hub_team_members = get_members(args.username, team_name)
+    print("=> Members ", hub_team_members)
     if team_name not in yaml_teams:
       continue
     if not hub_team_members[0]: print(hub_team_members[1]) & sys.exit(1)
