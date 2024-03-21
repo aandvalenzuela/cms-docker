@@ -140,7 +140,7 @@ for team_name in hub_teams:
     print("Start update")
     update_dockerhub(members_in_yaml, hub_team_members[1], team_name=team_name, what_to_sync='members')
     print("Update finished")
-#logout()
+logout()
 if args.dryrun and changes_applied:
   print('\nDOCKER HUB CONFIGURATION CHANGED\n')
   sys.exit(1)
