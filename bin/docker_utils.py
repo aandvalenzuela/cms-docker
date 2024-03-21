@@ -23,7 +23,13 @@ def hub_request(uri, data=None, params=None, headers=None, method='GET', json=Fa
 
 def http_request(url, data=None, params=None, headers=None, method = 'GET', json=False):
   response = request(method=method, url=url, data=data,  params=params, headers=headers)
-  return response.json() if json else response
+  if json:
+    try:
+      response = response.json()
+    except ValueError as e:
+      print(e)
+      response = response.text
+  return response
 
 # get token for docker Registry API
 def get_registry_token(repo):
