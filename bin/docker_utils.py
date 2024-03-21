@@ -174,7 +174,12 @@ def delete_tag(repo, tag):
 
 def logout():
   uri = '/logout/'
-  return hub_request(uri, method='POST', json=True)['detail']
+  response = hub_request(uri, method='POST', json=True)
+  try:
+    response = response['detail']
+  except ValueError as e:
+    print(e)
+  return response
 
 def get_digest(image, arch, debug=False):
   tag = image.split(":")[-1]
