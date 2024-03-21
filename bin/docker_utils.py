@@ -177,7 +177,7 @@ def logout():
   response = hub_request(uri, method='POST', json=True)
   try:
     response = loads(response)['detail']
-  except TypeError as e:
+  except ValueError as e:
     print(e)
   return response
 
