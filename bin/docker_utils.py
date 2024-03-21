@@ -26,7 +26,7 @@ def http_request(url, data=None, params=None, headers=None, method = 'GET', json
   print("=> URL: ", url)
   response = request(method=method, url=url, data=data,  params=params, headers=headers)
   print("=> HTTP RESPONSE: ", response.text)
-  return response.json() if json else response
+  return response.text if json else response
 
 # get token for docker Registry API
 def get_registry_token(repo):
